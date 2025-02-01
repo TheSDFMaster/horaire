@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+  <title>BONNE FÊTE</title>
+</head>
+<body>
+  <div id="pC">
+    <div id="lT">
+      <h1 id="localTeam">0</h1>
+      <button id="addLocal" onclick="addLocal()">+Visiteur</button>
+    </div>
+    <div id="dd">
+        <h2 id="timer">00:00</h2>
+    </div>
+    <div id="vT">
+      <h1 id="visitorTeam">0</h1>
+      <button id="addVisitor" onclick="addVisitor()">+Local</button>
+    </div>
+  </div>
+
+  <div id="cc">
+    <div id="bb">
+      <label for="minutes">Minutes: </label>
+      <input type="number" id="minutes" class="timee" min="0" value="0">
+      
+      <label for="seconds">Secondes: </label>
+      <input type="number" id="seconds" class="timee" min="0" max="59" value="0">
+    </div>
+    
+    <br>
+    
+    <div id="aa">
+      <button class="tim" onclick="startTimer()">Commencer</button>
+      <button class="tim" onclick="stopTimer()">Arrêter</button>
+      <button class="tim" onclick="resetTimer()">Reset</button>
+      <button class="tim" onclick="chat()">Chat</button>
+    </div>
+  </div>
+
+  <script>
+    let countdown;
+    let timeLeft = 0;
+    let isRunning = false;
+    
+    function updateDisplay() {
+      const min = Math.floor(timeLeft / 60);
+      const sec = timeLeft % 60;
+      document.getElementById("timer").textContent = 
+          `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+
+    function startTimer() {
+      if (isRunning) return;
+      
+      if (timeLeft === 0) {
+        const min = parseInt(document.getElementById("minutes").value) || 0;
+        const sec = parseInt(document.getElementById("seconds").value) || 0;
+        timeLeft = min * 60 + sec;
+      }
+      
+      if (timeLeft <= 0) return;
+      
+      isRunning = true;
+      countdown = setInterval(() => {
+        if (timeLeft <= 0) {
+          clearInterval(countdown);
+          isRunning = false;
+        } else {
+          timeLeft--;
+          updateDisplay();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      clearInterval(countdown);
+      isRunning = false;
+    }
+
+    function resetTimer() {
+      stopTimer();
+      timeLeft = 0;
+      updateDisplay();
+    }
+
+    updateDisplay();
+
+    function addLocal() {
+      const localTeamElem = document.getElementById("localTeam");
+      let currentScore = parseInt(localTeamElem.textContent) || 0;
+      localTeamElem.textContent = currentScore + 1;
+    }
+
+    function addVisitor() {
+      const visitorTeamElem = document.getElementById("visitorTeam");
+      let currentScore = parseInt(visitorTeamElem.textContent) || 0;
+      visitorTeamElem.textContent = currentScore + 1;
+    }
+
+    document.addEventListener("keydown", function(event) {
+        if (event.key === "e" || event.key === "E") {
+            document.getElementById("localTeam").textContent = "0";
+            document.getElementById("visitorTeam").textContent = "0"; 
+        }
+    });
+
+    function chat() {
+        window.alert("J'AIME LES CHATS");
+    }
+
+  </script>
+</body>
+</html>
