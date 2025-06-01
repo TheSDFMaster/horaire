@@ -273,35 +273,65 @@ function renderTools() {
     toolsContainer.appendChild(eraseBtn);
 }
 
-function exportToExcel() {
-    const keyMonth = `${currentYear}-${currentMonth}`;
-    const daysInMonth = getDaysInMonth(currentMonth, currentYear);
+function exportAllMonthsToExcel() {
+    const wb = XLSX.utils.book_new();
+    const calendarColors = JSON.parse(localStorage.getItem('calendarColors') || '{}');
+    const employees = JSON.parse(localStorage.getItem('calendar_employees') || '[]');
+    const colorTools = JSON.parse(localStorage.getItem('colorTools') || '[]');
 
-    const header = ['Employé'];
-    for (let i = 1; i <= daysInMonth; i++) {
-        header.push(i.toString().padStart(2, '0'));
-    }
-
-    const rows = [header];
-
-    employees.forEach(emp => {
-        const row = [emp];
-        for (let d = 1; d <= daysInMonth; d++) {
-            const dayStr = d.toString().padStart(2, '0');
-            const color = calendarColors?.[emp]?.[keyMonth]?.[dayStr];
-            const label = colorTools.find(tool => tool.color === color)?.label || '';
-            row.push(label);
-        }
-        rows.push(row);
+    const colorMap = {};
+    colorTools.forEach(tool => {
+        colorMap[tool.color.toLowerCase()] = tool.label;
     });
 
-    const worksheet = XLSX.utils.aoa_to_sheet(rows);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Calendrier');
+    for (let month = 0; month < 12; month++) {
+        const monthName = monthNames[month];
+        const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
 
-    const filename = `Calendrier_${monthNames[currentMonth]}_${currentYear}.xlsx`;
-    XLSX.writeFile(workbook, filename);
+        const data = [];
+        const headerRow1 = ['Employé'];
+
+        const headerRow2 = [''];
+
+        for (let d = 1; d <= daysInMonth; d++) {
+            const date = new Date(currentYear, month, d);
+            const weekday = weekdayNames[date.getDay()];
+            headerRow1.push(String(d).padStart(2, '0'));
+            headerRow2.push(weekday);
+        }
+
+        data.push(headerRow1);
+        data.push(headerRow2);
+
+        employees.forEach(emp => {
+            const row = [emp];
+            for (let d = 1; d <= daysInMonth; d++) {
+                const keyMonth = `${currentYear}-${month}`;
+                const dayStr = String(d).padStart(2, '0');
+                const color = calendarColors?.[emp]?.[keyMonth]?.[dayStr];
+                const label = colorMap[color?.toLowerCase()] || '';
+                row.push(label);
+            }
+            data.push(row);
+        });
+
+        const ws = XLSX.utils.aoa_to_sheet(data);
+
+        ws['!freeze'] = { xSplit: 1, ySplit: 2 };
+
+        ws['!cols'] = [{ wch: 20 }, ...Array(daysInMonth).fill({ wch: 10 })];
+
+        XLSX.utils.book_append_sheet(wb, ws, monthName);
+    }
+
+    XLSX.writeFile(wb, `Calendrier_${currentYear}.xlsx`);
 }
+
+const exportBtn = document.createElement('button');
+exportBtn.textContent = 'Exporter';
+exportBtn.id = 'exportToExcel';
+exportBtn.onclick = exportAllMonthsToExcel;
+document.body.appendChild(exportBtn);
 
 function saveEmployees() {
     localStorage.setItem('calendar_employees', JSON.stringify(employees));
