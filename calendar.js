@@ -104,6 +104,16 @@ function renderCalendar(month, year) {
                 const savedColor = calendarColors?.[emp]?.[keyMonth]?.[dayStr];
                 if (savedColor) {
                     dayCell.style.backgroundColor = savedColor;
+
+                    const tool = colorTools.find(t => t.color.toLowerCase() === savedColor.toLowerCase());
+                    if (tool) {
+                        const labelLetter = tool.label.trim().charAt(0).toUpperCase();
+                        dayCell.textContent = labelLetter;
+                        dayCell.style.color = 'white';
+                        dayCell.style.textAlign = 'center';
+                        dayCell.style.fontWeight = 'bold';
+                        dayCell.style.fontSize = '14px';
+                    }
                 }
 
                 dayCell.onclick = () => {
@@ -116,9 +126,24 @@ function renderCalendar(month, year) {
                     if (coloringMode === 'erase') {
                         delete calendarColors[employeeName][keyMonth][dayStr];
                         dayCell.style.backgroundColor = '';
+                        dayCell.textContent = d.toString().padStart(2, '0');
+                        dayCell.style.color = '';
+                        dayCell.style.textAlign = '';
+                        dayCell.style.fontWeight = '';
+                        dayCell.style.fontSize = '';
                     } else if (coloringMode) {
                         calendarColors[employeeName][keyMonth][dayStr] = coloringMode;
                         dayCell.style.backgroundColor = coloringMode;
+
+                        const tool = colorTools.find(t => t.color.toLowerCase() === coloringMode.toLowerCase());
+                        if (tool) {
+                            const labelLetter = tool.label.trim().charAt(0).toUpperCase();
+                            dayCell.textContent = labelLetter;
+                            dayCell.style.color = 'white';
+                            dayCell.style.textAlign = 'center';
+                            dayCell.style.fontWeight = 'bold';
+                            dayCell.style.fontSize = '14px';
+                        }
                     }
 
                     saveCalendarColors();
@@ -339,7 +364,7 @@ function saveEmployees() {
 
 function saveColorTools() {
     localStorage.setItem('colorTools', JSON.stringify(colorTools));
-}6
+}
 
 function saveCalendarColors() {
     localStorage.setItem('calendarColors', JSON.stringify(calendarColors));
