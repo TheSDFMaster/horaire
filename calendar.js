@@ -4,6 +4,7 @@ const monthLabel = document.getElementById('months');
 let currentColorTool = null;
 let coloringMode = null;
 let selectedEmployee = null;
+let isMouseDown = false;
 
 let calendarColors = JSON.parse(localStorage.getItem('calendarColors')) || {};
 
@@ -68,6 +69,27 @@ function renderCalendar(month, year) {
 
         const empName = document.createElement('span');
         empName.textContent = emp;
+        
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'M';
+        editBtn.className = 'edit-btn';
+        editBtn.onclick = (e) => {
+            e.stopPropagation();
+            const edited = window.prompt("Modification du nom:", emp);
+            if (edited && edited.trim() !== "") {
+                employees[eIndex] = edited.trim();
+                if (calendarColors[emp]) {
+                    calendarColors[edited.trim()] = calendarColors[emp];
+                    delete calendarColors[emp];
+                }
+                saveEmployees();
+                saveCalendarColors();
+                renderCalendar(currentMonth, currentYear);
+            } else {
+                alert("Aucune donnée valide n'a été entrée.");
+            }
+        };
+
 
         const delBtn = document.createElement('button');
         delBtn.textContent = 'X';
@@ -84,6 +106,7 @@ function renderCalendar(month, year) {
         };
 
         empWrapper.appendChild(empName);
+        empWrapper.appendChild(editBtn);
         empWrapper.appendChild(delBtn);
         calendarContainer.appendChild(empWrapper);
 
@@ -116,38 +139,15 @@ function renderCalendar(month, year) {
                     }
                 }
 
-                dayCell.onclick = () => {
-                    if (!selectedEmployee) return;
-
-                    const employeeName = selectedEmployee;
-                    if (!calendarColors[employeeName]) calendarColors[employeeName] = {};
-                    if (!calendarColors[employeeName][keyMonth]) calendarColors[employeeName][keyMonth] = {};
-
-                    if (coloringMode === 'erase') {
-                        delete calendarColors[employeeName][keyMonth][dayStr];
-                        dayCell.style.backgroundColor = '';
-                        dayCell.textContent = d.toString().padStart(2, '0');
-                        dayCell.style.color = '';
-                        dayCell.style.textAlign = '';
-                        dayCell.style.fontWeight = '';
-                        dayCell.style.fontSize = '';
-                    } else if (coloringMode) {
-                        calendarColors[employeeName][keyMonth][dayStr] = coloringMode;
-                        dayCell.style.backgroundColor = coloringMode;
-
-                        const tool = colorTools.find(t => t.color.toLowerCase() === coloringMode.toLowerCase());
-                        if (tool) {
-                            const labelLetter = tool.label.trim().charAt(0).toUpperCase();
-                            dayCell.textContent = labelLetter;
-                            dayCell.style.color = 'white';
-                            dayCell.style.textAlign = 'center';
-                            dayCell.style.fontWeight = 'bold';
-                            dayCell.style.fontSize = '14px';
-                        }
+                dayCell.addEventListener('mousedown', () => {
+                    handleCellColoring(emp, dayStr, dayCell, d);
+                });
+                dayCell.addEventListener('mouseover', () => {
+                    if (isMouseDown) {
+                        handleCellColoring(emp, dayStr, dayCell, d);
                     }
+                });
 
-                    saveCalendarColors();
-                };
             }
 
             calendarContainer.appendChild(dayCell);
@@ -163,6 +163,7 @@ function addNavigationButtons() {
 
     const prevBtn = document.createElement('button');
     prevBtn.textContent = '<<';
+    prevBtn.className = 'btn_standard';
     prevBtn.style.cursor = "pointer"
     prevBtn.onclick = () => {
         currentMonth--;
@@ -175,6 +176,7 @@ function addNavigationButtons() {
 
     const nextBtn = document.createElement('button');
     nextBtn.textContent = '>>';
+    nextBtn.className = 'btn_standard';
     nextBtn.style.cursor = "pointer"
     nextBtn.onclick = () => {
         currentMonth++;
@@ -190,11 +192,44 @@ function addNavigationButtons() {
     document.body.appendChild(nav);
 }
 
+function handleCellColoring(employeeName, dayStr, dayCell, d) {
+    if (!selectedEmployee || selectedEmployee !== employeeName) return;
+
+    const keyMonth = `${currentYear}-${currentMonth}`;
+    if (!calendarColors[employeeName]) calendarColors[employeeName] = {};
+    if (!calendarColors[employeeName][keyMonth]) calendarColors[employeeName][keyMonth] = {};
+
+    if (coloringMode === 'erase') {
+        delete calendarColors[employeeName][keyMonth][dayStr];
+        dayCell.style.backgroundColor = '';
+        dayCell.textContent = d.toString().padStart(2, '0');
+        dayCell.style.color = '';
+        dayCell.style.textAlign = '';
+        dayCell.style.fontWeight = '';
+        dayCell.style.fontSize = '';
+    } else if (coloringMode) {
+        calendarColors[employeeName][keyMonth][dayStr] = coloringMode;
+        dayCell.style.backgroundColor = coloringMode;
+
+        const tool = colorTools.find(t => t.color.toLowerCase() === coloringMode.toLowerCase());
+        if (tool) {
+            const labelLetter = tool.label.trim().charAt(0).toUpperCase();
+            dayCell.textContent = labelLetter;
+            dayCell.style.color = 'white';
+            dayCell.style.textAlign = 'center';
+            dayCell.style.fontWeight = 'bold';
+            dayCell.style.fontSize = '14px';
+        }
+    }
+
+    saveCalendarColors();
+}
+
 function addEmployeeForm() {
     const form = document.createElement('div');
     form.id = 'employee-form';
     form.innerHTML = `
-        <input type="text" id="employee-name" placeholder="Nom de l'employé">
+        <input maxlenght='16' type="text" id="employee-name" placeholder="Nom de l'employé">
         <button id="add-employee">Ajouter</button>
     `;
 
@@ -279,6 +314,7 @@ function renderTools() {
 
     const addToolBtn = document.createElement('button');
     addToolBtn.textContent = '+Ajouter';
+    addToolBtn.className = 'btn_standard';
     addToolBtn.onclick = () => {
         const uniqueId = `tool-${Date.now()}`;
         colorTools.push({ id: uniqueId, color: '#cccccc', label: 'Nouveau' });
@@ -289,6 +325,7 @@ function renderTools() {
 
     const eraseBtn = document.createElement('button');
     eraseBtn.textContent = 'Effacer';
+    eraseBtn.className = 'btn_standard';
     if (coloringMode === 'erase') eraseBtn.classList.add('selected');
     eraseBtn.onclick = () => {
         coloringMode = 'erase';
@@ -298,65 +335,55 @@ function renderTools() {
     toolsContainer.appendChild(eraseBtn);
 }
 
-function exportAllMonthsToExcel() {
-    const wb = XLSX.utils.book_new();
-    const calendarColors = JSON.parse(localStorage.getItem('calendarColors') || '{}');
-    const employees = JSON.parse(localStorage.getItem('calendar_employees') || '[]');
-    const colorTools = JSON.parse(localStorage.getItem('colorTools') || '[]');
+document.getElementById('exportDataBtn').addEventListener('click', () => {
+    const exportData = {
+        calendar_employees: JSON.parse(localStorage.getItem('calendar_employees') || '[]'),
+        calendarColors: JSON.parse(localStorage.getItem('calendarColors') || '{}'),
+        colorTools: JSON.parse(localStorage.getItem('colorTools') || '[]')
+    };
 
-    const colorMap = {};
-    colorTools.forEach(tool => {
-        colorMap[tool.color.toLowerCase()] = tool.label;
-    });
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'horaire.json';
+    a.click();
+    URL.revokeObjectURL(url);
+});
 
-    for (let month = 0; month < 12; month++) {
-        const monthName = monthNames[month];
-        const daysInMonth = new Date(currentYear, month + 1, 0).getDate();
+document.getElementById('importDataBtn').addEventListener('click', () => {
+    document.getElementById('importFileInput').click();
+});
 
-        const data = [];
-        const headerRow1 = ['Employé'];
+document.getElementById('importFileInput').addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
 
-        const headerRow2 = [''];
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        try {
+            const data = JSON.parse(e.target.result);
+            if (data.calendar_employees && data.calendarColors && data.colorTools) {
+                localStorage.setItem('calendar_employees', JSON.stringify(data.calendar_employees));
+                localStorage.setItem('calendarColors', JSON.stringify(data.calendarColors));
+                localStorage.setItem('colorTools', JSON.stringify(data.colorTools));
 
-        for (let d = 1; d <= daysInMonth; d++) {
-            const date = new Date(currentYear, month, d);
-            const weekday = weekdayNames[date.getDay()];
-            headerRow1.push(String(d).padStart(2, '0'));
-            headerRow2.push(weekday);
-        }
-
-        data.push(headerRow1);
-        data.push(headerRow2);
-
-        employees.forEach(emp => {
-            const row = [emp];
-            for (let d = 1; d <= daysInMonth; d++) {
-                const keyMonth = `${currentYear}-${month}`;
-                const dayStr = String(d).padStart(2, '0');
-                const color = calendarColors?.[emp]?.[keyMonth]?.[dayStr];
-                const label = colorMap[color?.toLowerCase()] || '';
-                row.push(label);
+                alert("Données importées avec succès");
+                location.reload(); 
+            } else {
+                alert("Données invalides");
             }
-            data.push(row);
-        });
+        } catch (err) {
+            alert("Erreur de lecture du fichier");
+        }
+    };
+    reader.readAsText(file);
+});
 
-        const ws = XLSX.utils.aoa_to_sheet(data);
+document.addEventListener('mousedown', () => isMouseDown = true);
+document.addEventListener('mouseup', () => isMouseDown = false);
 
-        ws['!freeze'] = { xSplit: 1, ySplit: 2 };
 
-        ws['!cols'] = [{ wch: 20 }, ...Array(daysInMonth).fill({ wch: 10 })];
-
-        XLSX.utils.book_append_sheet(wb, ws, monthName);
-    }
-
-    XLSX.writeFile(wb, `Calendrier_${currentYear}.xlsx`);
-}
-
-const exportBtn = document.createElement('button');
-exportBtn.textContent = 'Exporter';
-exportBtn.id = 'exportToExcel';
-exportBtn.onclick = exportAllMonthsToExcel;
-document.body.appendChild(exportBtn);
 
 function saveEmployees() {
     localStorage.setItem('calendar_employees', JSON.stringify(employees));
@@ -374,9 +401,6 @@ function loadEmployees() {
     return JSON.parse(localStorage.getItem('calendar_employees') || '[]');
 }
 
-function loadCellData() {
-    return JSON.parse(localStorage.getItem('calendar_cells') || '{}');
-}
 
 addEmployeeForm();
 addNavigationButtons();

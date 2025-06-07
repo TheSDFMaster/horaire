@@ -57,16 +57,16 @@
 }
 
 #employee-form button {
-    padding: 5px 10px;
     font-size: 1rem;
-    background-color: #333;
-    color: white;
+    background-color: #aba7a7;
+    color: rgb(0, 0, 0);
     border-radius: 6px;
     cursor: pointer;
 }
 
 #employee-form button:hover {
     background-color: #555;
+    color: white;
 }
 
 .container > div[contenteditable="true"] {
@@ -77,8 +77,6 @@
 .employ {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding-right: 5px;
 }
 
 .delete-employee {
@@ -87,12 +85,26 @@
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    padding: 2px 6px;
-    font-size: 0.8rem;
+    padding: 1px 5px;
+    font-size: 0.6rem;
 }
 
 .delete-employee:hover {
     background-color: darkred;
+}
+
+.edit-btn {
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-size: 0.6rem;
+}
+
+.edit-btn:hover {
+    background-color: rgb(10, 10, 155);
 }
 
 #tools {
@@ -180,15 +192,24 @@
     background-color:rgb(123, 255, 123);
 }
 
-#exportToExcel {
-    background-color: #ccc;
-    margin-top: 1%;
-    padding: 2px 2px;
-    border-radius: 5px;
+.btn_standard {
+    padding: 2px 5px;
+    font-size: 1rem;
+    background-color: #aba7a7;
+    color: rgb(0, 0, 0);
+    border-radius: 6px;
     cursor: pointer;
 }
 
-#exportToExcel:hover {
-    background-color: #000;
+.btn_standard:hover {
+    background-color: #555;
     color: white;
+}
+
+#exportDataBtn {
+    margin-top: 7px;
+}
+
+#importDataBtn {
+    margin-top: 7px;
 }
