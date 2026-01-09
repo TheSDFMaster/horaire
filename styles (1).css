@@ -1,0 +1,215 @@
+#months {
+    color: black;
+    margin: 0;
+}
+
+#topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 150px repeat(31, 1fr);
+    gap: 2px;
+}
+
+.container > div {
+    border: 1px solid #000;
+    padding: 8px;
+    background-color: whitesmoke;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.emplo {
+    background-color: #ccc;
+    font-weight: bold;
+}
+
+#navigation {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.weekday {
+    font-weight: bold;
+    background-color: #ddd;
+}
+
+#employee-form {
+    margin-bottom: 10px;
+    display: flex;
+    gap: 10px;
+    justify-content: left;
+}
+
+#employee-form input {
+    padding: 5px;
+    font-size: 1rem;
+    border-style: double;
+    border-color: #000;
+    border-radius: 6px;
+}
+
+#employee-form button {
+    font-size: 1rem;
+    background-color: #aba7a7;
+    color: rgb(0, 0, 0);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#employee-form button:hover {
+    background-color: #555;
+    color: white;
+}
+
+.container > div[contenteditable="true"] {
+    background-color: #fffce6;
+    cursor: text;
+}
+
+.employ {
+    display: flex;
+    justify-content: space-between;
+}
+
+.delete-employee {
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-size: 0.6rem;
+}
+
+.delete-employee:hover {
+    background-color: darkred;
+}
+
+.edit-btn {
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 1px 5px;
+    font-size: 0.6rem;
+}
+
+.edit-btn:hover {
+    background-color: rgb(10, 10, 155);
+}
+
+#tools {
+    display: flex;
+    gap: 10px;
+    align-items: left;
+}
+
+.tool-button {
+    display: flex;
+    align-items: left;
+    gap: 5px;
+}
+
+.tool-button input[type="color"] {
+    width: 24px;
+    height: 24px;
+    border: 2px solid black;
+    padding: 0;
+    cursor: pointer;
+}
+
+.tool-button input[type="text"] {
+    border: 1px solid #ccc;
+    font-size: 0.9rem;
+}
+
+.calendar-day {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.calendar-day.selected {
+    border: 2px solid #000;
+}
+
+#del {
+    background-color: red;
+    border-radius: 5px;
+}
+
+#del:hover {
+    background-color: rgb(102, 0, 0);
+    color: white;
+    border-radius: 3px;
+}
+
+#add {
+    background-color:rgb(0, 255, 47);
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#add:hover {
+    background-color: rgb(93, 209, 93);
+}
+
+#eraseColor {
+    background-color: grey;
+    cursor: pointer;
+}
+
+#employe:target {
+    background-color: #000;
+    color: white;
+}
+
+.selected {
+    box-shadow: 0 0 10px #000;
+    border-radius: 6px;
+    background-color: #222;
+    color: rgb(255, 0, 0);
+    font-weight: bold;
+}
+
+.activate-tool {
+    border-radius: 20px;
+    padding: 10px;
+    background-color:rgb(22, 158, 22);
+}
+
+.activate-tool:hover {
+    border-radius: 20px;
+    padding: 10px;
+    background-color:rgb(123, 255, 123);
+}
+
+.btn_standard {
+    padding: 2px 5px;
+    font-size: 1rem;
+    background-color: #aba7a7;
+    color: rgb(0, 0, 0);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.btn_standard:hover {
+    background-color: #555;
+    color: white;
+}
+
+#exportDataBtn {
+    margin-top: 7px;
+}
+
+#importDataBtn {
+    margin-top: 7px;
+}

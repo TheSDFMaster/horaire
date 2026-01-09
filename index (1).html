@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Horaire</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>  
+    <div id="topbar">
+        <h1 id="months"></h1>
+        <div id="tools">
+        </div>
+    </div>
+   <div class="container">
+   </div> 
+   <button class="btn_standard" onclick="window.print()">Imprimer</button>
+   <button class="btn_standard" id="exportDataBtn">Exporter</button>
+   <button class="btn_standard" id="importDataBtn">Importer</button>
+   <input type="file" id="importFileInput" style="display: none;" />
+   <script src="calendar.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</body>
+</html>
